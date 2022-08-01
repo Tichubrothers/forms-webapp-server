@@ -19,7 +19,6 @@ const RootQuery = new GraphQLObjectType({
       type: new GraphQLList(UserType),
       args: { id: { type: GraphQLInt } },
       resolve: (parent, args) => {
-        // return userData;
         const userData = db
           .query(`SELECT * FROM users`)
           .then((res) => res)
@@ -42,16 +41,29 @@ const RootMutation = new GraphQLObjectType({
         password: { type: GraphQLString },
         gender: { type: GraphQLString },
       },
-      resolve: (parent, args) => {
-        // debugger.query("INSERT")
-        userData.push({
-          forms_id: userData.length + 1,
-          firstname: args.firstName,
-          lastname: args.lastName,
-          email: args.email,
-          password: args.password,
-          gender: args.gender,
-        });
+      resolve: async (parent, args) => {
+        const allUsers = await db
+          .query(`SELECT COUNT(*) FROM users`)
+          .then((res) => parseInt(res[0].count) + 10)
+          .catch((err) => err);
+
+        const values = [
+          allUsers,
+          args.firstname,
+          args.lastname,
+          args.email,
+          args.password,
+          args.gender,
+        ];
+
+        const query = `INSERT INTO users (forms_id, firstname, lastname, email, password, gender) 
+            VALUES ($1, $2, $3, $4, $5, $6) RETURNING forms_id, firstname, lastname, email, password, gender`;
+
+        db.query(query, values)
+          .then((res) => res)
+          .then((res) => console.log(res))
+          .catch((err) => err);
+
         return args;
       },
     },

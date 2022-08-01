@@ -32,7 +32,7 @@ CREATE TABLE users(
 ALTER TABLE users
 ADD COLUMN name VARCHAR(255);
 
-INSERT INTO users (forms_id, firstName, lastName, email, password, gender)
+INSERT INTO users (forms_id, firstname, lastname, email, password, gender)
 VALUES (3, 'Millie Bobby', 'Brown', 'eleven@subscribe.com', 'hg495gn9', 'female');
 
 
